@@ -17,7 +17,6 @@ interface VercelAIGatewayHandlerOptions extends CommonApiHandlerOptions {
 	openRouterModelInfo?: ModelInfo
 	reasoningEffort?: string
 	thinkingBudgetTokens?: number
-	geminiThinkingLevel?: string
 }
 
 export class VercelAIGatewayHandler implements ApiHandler {
@@ -64,9 +63,8 @@ export class VercelAIGatewayHandler implements ApiHandler {
 				this.options.reasoningEffort,
 				this.options.thinkingBudgetTokens,
 				tools,
-				this.options.geminiThinkingLevel,
 			)
-			let didOutputUsage: boolean = false
+			let didOutputUsage = false
 
 			const toolCallProcessor = new ToolCallProcessor()
 
@@ -86,7 +84,12 @@ export class VercelAIGatewayHandler implements ApiHandler {
 
 				// Reasoning tokens are returned separately from the content
 				// Skip reasoning content for models that don't support it (e.g., devstral, grok-4)
-				if ("reasoning" in delta && delta.reasoning && !shouldSkipReasoningForModel(this.options.openRouterModelId)) {
+				if (
+					delta &&
+					"reasoning" in delta &&
+					delta.reasoning &&
+					!shouldSkipReasoningForModel(this.options.openRouterModelId)
+				) {
 					yield {
 						type: "reasoning",
 						reasoning: typeof delta.reasoning === "string" ? delta.reasoning : JSON.stringify(delta.reasoning),
@@ -95,6 +98,7 @@ export class VercelAIGatewayHandler implements ApiHandler {
 
 				// Reasoning details that can be passed back in API requests to preserve reasoning traces
 				if (
+					delta &&
 					"reasoning_details" in delta &&
 					delta.reasoning_details &&
 					// @ts-expect-error-next-line
@@ -139,6 +143,11 @@ export class VercelAIGatewayHandler implements ApiHandler {
 		const modelInfo = this.options.openRouterModelInfo
 		if (modelId && modelInfo) {
 			return { id: modelId, info: modelInfo }
+		}
+		// If we have a model ID but no model info, preserve the selected model ID
+		// and fall back only the metadata to defaults.
+		if (modelId) {
+			return { id: modelId, info: openRouterDefaultModelInfo }
 		}
 		return { id: openRouterDefaultModelId, info: openRouterDefaultModelInfo }
 	}
