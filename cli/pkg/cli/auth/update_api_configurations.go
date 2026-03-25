@@ -174,15 +174,13 @@ func GetProviderFields(provider cline.ApiProvider) (ProviderFields, error) {
 			ActModeProviderSpecificModelIDField:  "actModeNousResearchModelId",
 		}, nil
 
-	case cline.ApiProvider_VERCEL_AI_GATEWAY:
+	case cline.ApiProvider_SAPAICORE:
 		return ProviderFields{
-			APIKeyField:                          "vercelAiGatewayApiKey",
+			APIKeyField:                          "sapAiCoreClientId",
 			PlanModeModelIDField:                 "planModeApiModelId",
 			ActModeModelIDField:                  "actModeApiModelId",
-			PlanModeModelInfoField:               "planModeVercelAiGatewayModelInfo",
-			ActModeModelInfoField:                "actModeVercelAiGatewayModelInfo",
-			PlanModeProviderSpecificModelIDField: "planModeVercelAiGatewayModelId",
-			ActModeProviderSpecificModelIDField:  "actModeVercelAiGatewayModelId",
+			PlanModeProviderSpecificModelIDField: "planModeSapAiCoreModelId",
+			ActModeProviderSpecificModelIDField:  "actModeSapAiCoreModelId",
 		}, nil
 
 	default:
